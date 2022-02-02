@@ -1,5 +1,7 @@
-const {getProducts} = require('./store');
-const express = require('express');
+import {Products} from './types/dbTypes';
+
+const {getProducts} = require('./utils/handlers');
+import express from 'express'
 const productsRouter = express.Router();
 
 productsRouter.use((req, res, next) => {
@@ -14,7 +16,7 @@ productsRouter.get('/', async function (req, res) {
 
 productsRouter.get('/:id', async function (req, res) {
     const productId = Number(req.params.id)
-    const products = await getProducts()
+    const products: Products = await getProducts()
     const product = products.find(u => u.id === productId)
     product ? res.send(product) : res.sendStatus(404)
 })
