@@ -1,7 +1,11 @@
 {
   "scripts": {
     "serve": "nodemon src/index.ts",
-    "dev": "nodemon --inspect src/index.ts"
+    "dev": "nodemon --inspect src/index.ts",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "seed": "npx sequelize-cli db:seed:all",
+    "seed:undo:all": "npx sequelize-cli db:seed:undo:all"
   },
   "dependencies": {
     "body-parser": "^1.19.1",
