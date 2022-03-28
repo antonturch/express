@@ -5,7 +5,7 @@ interface OrdersAttributes {
   id: number;
   firstName: string;
   lastName: string;
-  mail: string;
+  email: string;
   password: string;
 }
 
@@ -19,7 +19,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     id!: number;
     firstName!: string;
     lastName!: string;
-    mail!: string;
+    email!: string;
     password!: string;
 
     static associate(models: any) {
@@ -44,7 +44,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      mail: {
+      email: {
         type: DataTypes.STRING,
         allowNull: false,
       },
