@@ -8,11 +8,11 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      uId: {
+      UserId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      pId: {
+      ProductId: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },

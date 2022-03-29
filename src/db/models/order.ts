@@ -32,11 +32,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      uId: {
+      UserId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      pId: {
+      ProductId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

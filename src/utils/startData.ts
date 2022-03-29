@@ -6,6 +6,18 @@ module.exports = {
       email: "example@example.com",
       password: "123pass",
     },
+    {
+      firstName: "Jane",
+      lastName: "Doe",
+      email: "example1@example.com",
+      password: "1234pass",
+    },
+  ],
+  orders: [
+    { UserId: 1, ProductId: 1 },
+    { UserId: 1, ProductId: 1 },
+    { UserId: 2, ProductId: 2 },
+    { UserId: 2, ProductId: 3 },
   ],
   catalog: [
     {

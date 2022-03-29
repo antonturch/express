@@ -1,6 +1,6 @@
 "use strict";
 
-const { users } = require("../src/utils/startData.ts");
+const { orders } = require("../../utils/startData.ts");
 module.exports = {
   async up(queryInterface, Sequelize) {
     /**
@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    return queryInterface.bulkInsert("Users", users);
+    return queryInterface.bulkInsert("Orders", orders);
   },
 
   async down(queryInterface, Sequelize) {
@@ -22,6 +22,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return queryInterface.bulkDelete("Users", null, {});
+    return queryInterface.bulkDelete("Orders", null, {});
   },
 };
