@@ -1,13 +1,10 @@
-import { errorHandler } from "./error-handler/error-handler";
-import { ErrorException } from "./error-handler/error-exception";
-import { ErrorCode } from "./error-handler/error-code";
-import { NextFunction } from "express";
-
+const { errorHandler, ErrorException, ErrorCode } = require("./error-handler");
 const express = require("express");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const cors = require("cors");
 import db from "./db/models";
+import { NextFunction } from "express";
 
 const app = express();
 const PORT = process.env.PORT || 5000;

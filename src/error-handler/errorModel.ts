@@ -1,4 +1,4 @@
-export class ErrorModel {
+module.exports = class ErrorModel {
     /**
      * Unique error code which identifies the error.
      */

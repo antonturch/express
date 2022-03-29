@@ -1,4 +1,4 @@
-export class ErrorCode {
+module.exports = class ErrorCode {
     public static readonly Unauthenticated = 'Unauthenticated';
     public static readonly NotFound = 'NotFound';
     public static readonly MaximumAllowedGrade = 'MaximumAllowedGrade';
