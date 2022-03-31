@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
     "serve": "nodemon src/index.ts",
     "dev": "nodemon --inspect src/index.ts",
     "migrate": "npx sequelize-cli db:migrate",
