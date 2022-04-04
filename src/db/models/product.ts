@@ -1,14 +1,6 @@
 "use strict";
 import { Model } from "sequelize";
-
-interface ProductAttributes {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  currency: string;
-  img: string;
-}
+import { ProductAttributes } from "../modelsType";
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Product extends Model implements ProductAttributes {

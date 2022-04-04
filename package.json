@@ -1,9 +1,10 @@
 {
   "scripts": {
     "build": "tsc",
-    "start": "node dist/src/index.js",
-    "serve": "nodemon src/index.ts",
-    "dev": "nodemon --inspect src/index.ts",
+    "start": "tsc && node dist/src/app.js",
+    "dev": "nodemon src/app.ts",
+    "dbcreate": "npx sequelize-cli db:create",
+    "dbdrop": "npx sequelize-cli db:drop",
     "migrate": "npx sequelize-cli db:migrate",
     "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
     "seed": "npx sequelize-cli db:seed:all",

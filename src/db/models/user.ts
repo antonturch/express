@@ -1,13 +1,6 @@
 "use strict";
 import { Model } from "sequelize";
-
-interface OrdersAttributes {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+import { OrdersAttributes } from "../modelsType";
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class User extends Model implements OrdersAttributes {
