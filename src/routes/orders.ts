@@ -1,4 +1,5 @@
 import express from "express";
+import { OrderAttributes } from "../db/modelsType";
 
 const { orderService } = require("../services");
 
@@ -12,7 +13,9 @@ ordersRouter.use((req, res, next) => {
 ordersRouter.get("/:id", async function (req, res) {
   const UserId = Number(req.params.id);
   try {
-    const ordersList = await orderService.getOrderByUserId(UserId);
+    const ordersList: OrderAttributes = await orderService.getOrderByUserId(
+      UserId
+    );
     res.json(ordersList);
   } catch (e) {
     console.log(e);
@@ -24,10 +27,10 @@ ordersRouter.post("/:id", async function (req, res) {
   const UserId = Number(req.params.id);
   const ProductId = Number(req.body.productId);
   try {
-    const ordersList = await orderService.addNewOrder(UserId, ProductId);
-    // res.sendStatus(200);
-    // console.log(ordersList.dataValues)
-    //Todo: what we should return to clint side here?
+    await orderService.addNewOrder(UserId, ProductId);
+    const ordersList = await orderService.getOrderByUserId(UserId);
+    const createdOrder = ordersList[ordersList.length - 1];
+    res.status(201).json(createdOrder);
   } catch (e) {
     console.log(e);
     res.sendStatus(500);

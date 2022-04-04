@@ -1,4 +1,5 @@
 import express from "express";
+import { ProductAttributes } from "../db/modelsType";
 
 const { productService } = require("../services");
 
@@ -11,7 +12,7 @@ products.use((req, res, next) => {
 
 products.get("/", async function (req, res) {
   try {
-    const products = await productService.getAll();
+    const products: ProductAttributes[] = await productService.getAll();
     res.json(products);
   } catch (e) {
     console.log(e);
@@ -22,7 +23,9 @@ products.get("/", async function (req, res) {
 products.get("/:id", async function (req, res) {
   const productId = Number(req.params.id);
   try {
-    const product = await productService.getProductById(productId);
+    const product: ProductAttributes = await productService.getProductById(
+      productId
+    );
     res.json(product);
   } catch (e) {
     console.log(e);
