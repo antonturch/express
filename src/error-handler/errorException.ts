@@ -1,29 +1,18 @@
-module.exports = class ErrorException extends Error {
+module.exports = class ApiError extends Error {
   public status: number;
-  public metaData: any = null;
+  public errors: any = null;
 
-  constructor(code: string = ErrorCode.UnknownError, metaData: any = null) {
-    super(code);
-    Object.setPrototypeOf(this, new.target.prototype);
-    this.name = code;
-    this.status = 500;
-    this.metaData = metaData;
-    switch (code) {
-      case ErrorCode.Unauthenticated:
-        this.status = 401;
-        break;
-      case ErrorCode.MaximumAllowedGrade:
-        this.status = 400;
-        break;
-      case ErrorCode.AsyncError:
-        this.status = 400;
-        break;
-      case ErrorCode.NotFound:
-        this.status = 404;
-        break;
-      default:
-        this.status = 500;
-        break;
-    }
+  constructor(status: number, message: string, errors = []) {
+    super(message);
+    this.status = status;
+    this.errors = errors;
+  }
+
+  static UnauthorizedError() {
+    return new ApiError(401, "Пользователь не авторизован");
+  }
+
+  static BadRequest(message: string, errors = []) {
+    return new ApiError(400, message, errors);
   }
 };

@@ -24,6 +24,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      refreshToken: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
     });
   },
   async down(queryInterface, Sequelize) {

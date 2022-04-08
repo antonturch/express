@@ -5,12 +5,14 @@ module.exports = {
       lastName: "Doe",
       email: "example@example.com",
       password: "123pass",
+      // refreshToken: "123",
     },
     {
       firstName: "Jane",
       lastName: "Doe",
       email: "example1@example.com",
       password: "1234pass",
+      // refreshToken: "1234",
     },
   ],
   orders: [

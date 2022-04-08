@@ -1,11 +1,7 @@
 const ErrorCode = require("./errorСode");
-const ErrorException = require("./errorException");
-const errorHandler = require("./errorHandler");
-const ErrorModel = require("./errorModel");
+const ApiError = require("./errorException");
 
 module.exports = {
   ErrorCode,
-  ErrorException,
-  errorHandler,
-  ErrorModel,
+  ApiError,
 };

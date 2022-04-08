@@ -13,10 +13,11 @@ export interface ProductAttributes {
   img: string;
 }
 
-export interface OrdersAttributes {
+export interface UsersAttributes {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  refreshToken: string;
 }
