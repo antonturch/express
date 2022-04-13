@@ -4,7 +4,6 @@ require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 import db from "./db/models";
-import { NextFunction } from "express";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,7 +12,18 @@ const ordersRouter = require("./routes/orders");
 const authMiddleware = require("./middleware/authMiddleware");
 const errorMiddleware = require("./middleware/errorMiddleware");
 const authRouter = require("./routes/auth");
+const session = require("express-session");
+const passport = require("passport");
 
+app.use(
+  session({
+    secret: "cats",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(
   cors({
     credentials: true,
@@ -27,13 +37,6 @@ app.use(bodyParser.json());
 app.use("/products", productsRouter);
 app.use("/orders", authMiddleware, ordersRouter);
 app.use("/auth", authRouter);
-
-// app.get(
-//   "/throw-unauthenticated",
-//   (req: Express.Request, res: Express.Response, next: NextFunction) => {
-//     throw new ErrorException(ErrorCode.Unauthenticated);
-//   }
-// );
 
 app.use(errorMiddleware);
 

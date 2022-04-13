@@ -11,23 +11,27 @@
     "seed:undo:all": "npx sequelize-cli db:seed:undo:all"
   },
   "dependencies": {
-    "@types/cors": "^2.8.12",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^15.0.0",
     "express": "^4.17.2",
+    "express-session": "^1.17.2",
     "jsonwebtoken": "^8.5.1",
+    "passport": "^0.5.2",
+    "passport-google-oauth2": "^0.2.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "prettier": "^2.6.1",
     "sequelize": "^6.17.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.13",
+    "@types/sequelize": "^4.28.11",
     "sequelize-cli": "^6.4.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5"

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-const ApiError = require("../error-handler/index");
+const { ApiError } = require("../error-handler/index");
 
 module.exports = function (
   err: any,

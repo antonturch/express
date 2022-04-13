@@ -1,4 +1,3 @@
-// @ts-ignore
 import { UsersAttributes } from "../db/modelsType";
 
 const db = require("../db/models");
