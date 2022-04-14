@@ -1,11 +1,16 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-require("dotenv").config();
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
+import dotenv from "dotenv";
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
 import db from "./db/models";
+import { ordersRouter, productsRouter } from "./routes";
+
+dotenv.config();
+
+const { errorHandler } = require("./error-handler");
 
 const app = express();
+
 const PORT = process.env.PORT || 5000;
 const productsRouter = require("./routes/products");
 const ordersRouter = require("./routes/orders");
@@ -43,7 +48,6 @@ app.use(errorMiddleware);
 const start = async () => {
   try {
     await db.sequelize.authenticate();
-    await db.sequelize.sync();
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (e) {
     console.log(e);

@@ -1,9 +1,8 @@
-"use strict";
-import { Model } from "sequelize";
-import { ProductAttributes } from "../modelsType";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import { IModels, IProduct } from "../modelsType";
 
-module.exports = (sequelize: any, DataTypes: any) => {
-  class Product extends Model implements ProductAttributes {
+module.exports = (sequelize: Sequelize) => {
+  class Product extends Model implements IProduct {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -16,7 +15,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     currency!: string;
     img!: string;
 
-    static associate(models: any) {
+    static associate(models: IModels) {
       // define association here
       Product.hasMany(models.Order);
     }

@@ -1,10 +1,16 @@
-export interface OrderAttributes {
+import { ModelStatic } from "sequelize/types/model";
+
+const Order = require("./models/order");
+const Product = require("./models/order");
+const User = require("./models/order");
+
+export interface IOrder {
   id: number;
-  uId: number;
-  pId: number;
+  userId: number;
+  productId: number;
 }
 
-export interface ProductAttributes {
+export interface IProduct {
   id: number;
   name: string;
   description: string;
@@ -13,7 +19,7 @@ export interface ProductAttributes {
   img: string;
 }
 
-export interface UsersAttributes {
+export interface IUser {
   id: number;
   firstName: string;
   lastName: string;
@@ -21,3 +27,10 @@ export interface UsersAttributes {
   password: string;
   refreshToken: string;
 }
+
+export interface IModels {
+  Order: ModelStatic<typeof Order>;
+  Product: ModelStatic<typeof Product>;
+  User: ModelStatic<typeof User>;
+}
+

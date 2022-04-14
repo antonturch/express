@@ -1,15 +1,14 @@
-// @ts-ignore
-const db = require("../db/models");
+import db from "../db/models";
 
-const getAll = () => {
-  return db.default.Product.findAll();
+const getProducts = () => {
+  return db.Product.findAll();
 };
 
 const getProductById = (productId: number) => {
-  return db.default.Product.findByPk(productId);
+  return db.Product.findByPk(productId);
 };
 
-module.exports = {
-  getAll,
+export default {
+  getProducts,
   getProductById,
 };

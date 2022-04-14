@@ -21,7 +21,7 @@ module.exports = {
     { UserId: 2, ProductId: 2 },
     { UserId: 2, ProductId: 3 },
   ],
-  catalog: [
+  products: [
     {
       name: "Iphone 1",
       description: "The first",

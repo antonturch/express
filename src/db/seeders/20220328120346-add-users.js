@@ -1,5 +1,3 @@
-"use strict";
-
 const { users } = require("../../utils/startData.ts");
 module.exports = {
   async up(queryInterface, Sequelize) {
