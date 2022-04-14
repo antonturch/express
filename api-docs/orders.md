@@ -4,78 +4,72 @@ User order page
 
 ### ***/orders/{userId}***
 
-## REQUEST
+- Description: returns all user orders
+- Method: ***GET***
+- URI Parameters:
+    - `userId`: required(integer)
 
-type: ***get***
+#### Response
 
-##### URI Parameters
+- Headers:
+    - Content-type: `application/json`
 
-+ userId: required(integer)
-
-## RESPONSE
-
-#### Body
-
-Media type: application/json
-
-Type: array of objects
-
-Items: order
-
-    {
-      id: number,
-      userId: number,
-      productId: number,
-    }
+```
+{ orders: Order[] }
+```
 
 #### Example
 
+```
+{
+  orders: [
     {
       id: 1, 
       userId: 13,
       productId: 26,
     }
+  ]
+}
+```
 
-## REQUEST
+---
 
-type: ***post***
+### ***/orders/{userId}***
 
-##### URI Parameters
+- Description: creates order for user with specified product
+- Method: ***POST***
+- URI Parameters:
+    - `userId`: required(integer)
 
-+ userId: required(integer)
+#### Request body
 
-Media type: application/json
+```
+{
+  productId: number,
+}
+```
 
-Type: object
+#### Response
 
-    {
-      productId: number,
-    }
+- Headers:
+    - Content-type: `application/json`
 
-## RESPONSE
-
-#### Body
-
-Media type: application/json
-
-Type: object
-
-Item: order
-
-    {
-      id: number, 
-      userId: number,
-      productId: number,
-    }
+```
+{ order: Order }
+```
 
 #### Example
 
-    {
-      id: 1, 
-      userId: 13,
-      productId: 26,
-    }
+```
+{
+  order: {
+    id: 1, 
+    userId: 13,
+    productId: 26,
+  }
+}
+```
 
-***
+---
 
 #### [_Back to README_](./README.md)

@@ -4,67 +4,73 @@ Products page
 
 ### ***/products/***
 
-## REQUEST
+- Description: returns all products
+- Method: ***GET***
 
-type: ***get***
+#### Response
 
-## RESPONSE
+- Headers:
+    - Content-type: `application/json`
 
-#### Body
-
-Media type: application/json
-
-Type: array of objects
-
-Items: product
-
-    {
-      name: string,
-      description: string,
-      price: number,
-      currency: string,
-      img: string,
-    }
+```
+{ products: Product[] }
+```
 
 #### Example
 
+```
+{
+  products: [
     {
-      name: "Iphone 1",
-      description: "The first",
-      price: 350,
-      currency: "USD",
-      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/IPhone_1st_Gen.svg/200px-IPhone_1st_Gen.svg.png",
-    }
+      id: 1,
+      name: "Apple Iphone 3G",
+      description: "The iPhone you have been waiting for.",
+      price: 350;
+      currency: "USD";
+      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/IPhone_1st_Gen.svg/200px-IPhone_1st_Gen.svg.png";
+    },
+    {
+      id: 2,
+      name: "Apple Iphone 4",
+      description: "This changes everything. Again.”,
+      price: 370;
+      currency: "USD";
+      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/IPhone_4_Mock_No_Shadow_PSD.png/200px-IPhone_4_Mock_No_Shadow_PSD.png";
+    },
+  ]
+}
+```
 
-***
+---
 
 ### ***/products/{productId}***
 
-## REQUEST
+- Description: returns the product with the specified product id
+- Method: ***GET***
+- URI Parameters:
+    - `productId`: required(integer)
 
-type: ***get***
+#### Response
 
-##### URI Parameters
+- Headers:
+    - Content-type: `application/json`
 
-+ productId: required(integer)
+```
+{ product: Product }
+```
 
-## RESPONSE
+#### Example
 
-#### Body
-
-Media type: application/json
-
-Type: object
-
-Item: product
-
+```
     {
-      name: string,
-      description: string,
-      price: number,
-      currency: string,
-      img: string,
-    }
+      id: 1,
+      name: "Apple Iphone 3G",
+      description: "The iPhone you have been waiting for.",
+      price: 350;
+      currency: "USD";
+      img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/IPhone_1st_Gen.svg/200px-IPhone_1st_Gen.svg.png";
+    },
+```
 
 ***
 
