@@ -1,6 +1,4 @@
-"use strict";
-
-const { catalog } = require("../../utils/startData.ts");
+const { products } = require("../../utils/startData.ts");
 module.exports = {
   async up(queryInterface, Sequelize) {
     /**
@@ -12,7 +10,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    return queryInterface.bulkInsert("Products", catalog);
+    return queryInterface.bulkInsert("Products", products);
   },
 
   async down(queryInterface, Sequelize) {

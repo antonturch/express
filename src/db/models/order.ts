@@ -1,19 +1,18 @@
-"use strict";
-import { Model } from "sequelize";
-import { OrderAttributes } from "../modelsType";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import { IModels, IOrder } from "../modelsType";
 
-module.exports = (sequelize: any, DataTypes: any) => {
-  class Order extends Model implements OrderAttributes {
+module.exports = (sequelize: Sequelize) => {
+  class Order extends Model implements IOrder {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     id!: number;
-    uId!: number;
-    pId!: number;
+    userId!: number;
+    productId!: number;
 
-    static associate(models: any) {
+    static associate(models: IModels) {
       // define association here
       Order.belongsTo(models.User);
     }

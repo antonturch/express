@@ -1,5 +1,3 @@
-"use strict";
-
 const { orders } = require("../../utils/startData.ts");
 module.exports = {
   async up(queryInterface, Sequelize) {

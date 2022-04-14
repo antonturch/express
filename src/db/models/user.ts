@@ -1,9 +1,8 @@
-"use strict";
-import { Model } from "sequelize";
-import { OrdersAttributes } from "../modelsType";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import { IModels, IUser } from "../modelsType";
 
-module.exports = (sequelize: any, DataTypes: any) => {
-  class User extends Model implements OrdersAttributes {
+module.exports = (sequelize: Sequelize) => {
+  class User extends Model implements IUser {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -15,7 +14,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     email!: string;
     password!: string;
 
-    static associate(models: any) {
+    static associate(models: IModels) {
       // define association here
       User.hasMany(models.Order);
     }
