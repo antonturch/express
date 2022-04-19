@@ -1,18 +1,24 @@
 import { NextFunction, Request, Response } from "express";
+import { GeneralError, IError } from "../error-handler/error";
 
-const { ApiError } = require("../error-handler/index");
+interface IErrorResponseBody {
+  error: IError;
+}
 
-module.exports = function (
-  err: any,
+function getGeneralError(err: Error): GeneralError {
+  return err instanceof GeneralError ? err : new GeneralError();
+}
+
+export default function handleErrors(
+  err: Error,
   req: Request,
-  res: Response,
+  res: Response<IErrorResponseBody>,
   next: NextFunction
-) {
-  console.log(err);
-  if (err instanceof ApiError) {
-    return res
-      .status(err.status)
-      .json({ message: err.message, errors: err.errors });
-  }
-  return res.status(500).json({ message: "Unexpected error" });
-};
+): void {
+  const generalError = getGeneralError(err);
+
+  console.error(err);
+  res.status(generalError.getStatusCode()).json({
+    error: generalError.getError(),
+  });
+}
