@@ -1,8 +1,8 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import { IModels, IUser } from "../modelsType";
+import { IUserFull, IModels, IUser } from "../modelsType";
 
 module.exports = (sequelize: Sequelize) => {
-  class User extends Model implements IUser {
+  class User extends Model implements IUserFull {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -47,6 +47,7 @@ module.exports = (sequelize: Sequelize) => {
       },
       refreshToken: {
         type: DataTypes.TEXT,
+        defaultValue: null,
         allowNull: true,
       },
     },

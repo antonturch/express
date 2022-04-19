@@ -1,35 +1,53 @@
-import { NextFunction } from "express";
-import { Request } from "express-serve-static-core";
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import userServices from "../services/usersService";
+import { UnauthorizedError } from "../error-handler/custom-errors";
 
-const { ApiError } = require("../error-handler");
-const { validateAccessToken } = require("../services/userServices");
+dotenv.config();
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  console.log("authMiddleware");
+export default function authMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   if (req.method === "OPTIONS") {
     next();
   }
   try {
-    // @ts-ignore
     const accessToken = req.headers.authorization?.split(" ")[1];
-    // console.log("accessToken" + accessToken);
-    const googleCookie = req.cookies["connect.sid"];
-    console.log(googleCookie);
-    if (accessToken !== "null") {
-      const userData = validateAccessToken(accessToken);
+    const googleToken = req.cookies["jwt"];
+    const refreshToken = req.cookies["refreshToken"];
+    if (refreshToken && accessToken && accessToken !== "null") {
+      const userData = userServices.validateAccessToken(accessToken);
       // @ts-ignore
       req.user = userData;
       if (!userData) {
-        return next(ApiError.UnauthorizedError());
+        return next(
+          new UnauthorizedError({ message: `User doesn't authorized` })
+        );
       }
-    } else if (accessToken === "null" && !googleCookie) {
-      return next(ApiError.UnauthorizedError());
+    } else if (googleToken) {
+      const userFromGoogle = jwt.verify(
+        googleToken,
+        process.env.JWT_ACCESS_SECRET as string
+      );
+      if (!userFromGoogle) {
+        return next(
+          new UnauthorizedError({ message: `User doesn't authorized` })
+        );
+      }
+    } else if (accessToken === "null") {
+      return next(
+        new UnauthorizedError({ message: `User doesn't authorized` })
+      );
     }
     next();
-  } catch (e) {
-    console.log(e);
-    return next(ApiError.UnauthorizedError());
+  } catch (e: any) {
+    next(
+      new UnauthorizedError({
+        message: `User doesn't authorized (${e.message})`,
+      })
+    );
   }
-};
-
-module.exports = authMiddleware;
+}

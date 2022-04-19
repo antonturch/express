@@ -1,8 +1,8 @@
 import { ModelStatic } from "sequelize/types/model";
 
 const Order = require("./models/order");
-const Product = require("./models/order");
-const User = require("./models/order");
+const Product = require("./models/product");
+const User = require("./models/user");
 
 export interface IOrder {
   id: number;
@@ -25,6 +25,9 @@ export interface IUser {
   lastName: string;
   email: string;
   password: string;
+}
+
+export interface IUserFull extends IUser {
   refreshToken: string;
 }
 
@@ -33,4 +36,3 @@ export interface IModels {
   Product: ModelStatic<typeof Product>;
   User: ModelStatic<typeof User>;
 }
-

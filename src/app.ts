@@ -1,34 +1,18 @@
 import dotenv from "dotenv";
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import db from "./db/models";
-import { ordersRouter, productsRouter } from "./routes";
 
 dotenv.config();
+import cors from "cors";
+import express from "express";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import db from "./db/models";
+import { authRouter, ordersRouter, productsRouter } from "./routes";
+import { authMiddleware, errorMiddleware } from "./middleware/";
 
-const { errorHandler } = require("./error-handler");
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
-const productsRouter = require("./routes/products");
-const ordersRouter = require("./routes/orders");
-const authMiddleware = require("./middleware/authMiddleware");
-const errorMiddleware = require("./middleware/errorMiddleware");
-const authRouter = require("./routes/auth");
-const session = require("express-session");
-const passport = require("passport");
-
-app.use(
-  session({
-    secret: "cats",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(
   cors({
     credentials: true,
