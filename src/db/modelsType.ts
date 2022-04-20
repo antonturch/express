@@ -24,10 +24,10 @@ export interface IUser {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
 }
 
 export interface IUserFull extends IUser {
+  password: string;
   refreshToken: string;
 }
 

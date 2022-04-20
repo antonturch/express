@@ -14,7 +14,6 @@ interface IJwtPayload {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
 }
 
 const registrationUser = async (
@@ -159,7 +158,6 @@ const findToken = (refreshToken: string) => {
 };
 
 const updateToken = async (refreshToken: string) => {
-  console.log("updateToken");
   if (!refreshToken) {
     throw new UnauthorizedError({ message: "Refresh token is missed" });
   }
@@ -172,7 +170,6 @@ const updateToken = async (refreshToken: string) => {
   }
   const userDTO = userToDTO(user as IUserFull);
   const tokens = generateJwt(userDTO);
-  console.log(userDTO);
   await updateUser(user.id, tokens.refreshToken);
   return {
     user: { ...userDTO },

@@ -7,6 +7,7 @@ import { Request, Response } from "express-serve-static-core";
 import { userService } from "../services";
 import { BadRequestError } from "../error-handler/custom-errors";
 import { IAuthorizedRequest } from "../data-mappers/request";
+import userToDTO from "../data-mappers/user";
 
 dotenv.config();
 
@@ -77,11 +78,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     });
     res.json(userData);
   } catch (e) {
-    next(
-      new BadRequestError({
-        message: `Error during login. Incorrect credentials`,
-      })
-    );
+    next(e);
   }
 };
 
@@ -97,11 +94,10 @@ const googleAuthRedirect = async (
       email: req.user.email,
       password: req.user.id,
     };
-    console.log(user);
     const userData = await userService.findOrCreate(user);
     let token = jwt.sign(
       {
-        data: userData,
+        data: userToDTO(userData.dataValues),
       },
       process.env.JWT_ACCESS_SECRET as string,
       { expiresIn: 60 }
@@ -122,8 +118,11 @@ const googleAuthRedirect = async (
 const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
-    await userService.deleteToken(refreshToken);
-    res.clearCookie("refreshToken");
+    if (refreshToken) {
+      await userService.deleteToken(refreshToken);
+      res.clearCookie("refreshToken");
+    }
+    res.clearCookie("jwt");
     res.sendStatus(200);
   } catch (e) {
     next(
@@ -136,7 +135,6 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
 const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("refresh");
     const { refreshToken } = req.cookies;
     const user = await userService.updateToken(refreshToken);
     res.cookie("refreshToken", user.refreshToken, {
