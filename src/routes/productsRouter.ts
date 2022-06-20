@@ -30,6 +30,7 @@ productsRouter.get(
           code: ErrorCodes.PRODUCT_NOT_FOUND,
         });
       }
+
       res.json(product);
     } catch (e) {
       next(e);

@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
-import { IOrder } from "../db/modelsType";
-import { orderService } from "../services";
+import { IFullOrder, IOrder, IProduct } from "../db/modelsType";
+import { orderService, productService } from "../services";
 
 const ordersRouter = express.Router();
 
@@ -9,8 +9,39 @@ ordersRouter.get(
   async function (req: Request, res: Response, next: NextFunction) {
     const userId = Number(req.params.id);
     try {
-      const ordersList: IOrder = await orderService.getOrdersByUserId(userId);
-      res.json(ordersList);
+      const ordersList: IOrder[] = await orderService.getOrdersByUserId(userId);
+      const products: IProduct[] = await productService.getProducts();
+      let userOrders: IFullOrder[] = [];
+      ordersList.map((ord) => {
+        for (let i = 0; i < products.length; i++) {
+          if (products[i].id === ord.ProductId) {
+            userOrders = [
+              ...userOrders,
+              {
+                orderId: ord.id,
+                productId: products[i].id,
+                productName: products[i].name,
+                productImg: products[i].img,
+                price: products[i].price,
+                currency: products[i].currency,
+              },
+            ];
+          }
+        }
+      });
+      res.json(userOrders);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+ordersRouter.get(
+  "/:id/payment",
+  async function (req: Request, res: Response, next: NextFunction) {
+    const orderId = Number(req.params.id);
+    try {
+      const order: IOrder = await orderService.getOrderById(orderId);
+      res.json(order);
     } catch (e) {
       next(e);
     }
@@ -24,7 +55,17 @@ ordersRouter.post(
     const productId = Number(req.body.productId);
     try {
       const order = await orderService.addNewOrder(userId, productId);
-      res.status(201).json(order.dataValues);
+      const product = await productService.getProductById(
+        order.dataValues.ProductId
+      );
+      res.status(201).json({
+        orderId: order.dataValues.id,
+        productId: product.id,
+        productName: product.name,
+        productImg: product.img,
+        price: product.price,
+        currency: product.currency,
+      });
     } catch (e) {
       next(e);
     }

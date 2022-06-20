@@ -6,8 +6,17 @@ const User = require("./models/user");
 
 export interface IOrder {
   id: number;
-  userId: number;
-  productId: number;
+  UserId: number;
+  ProductId: number;
+}
+
+export interface IFullOrder {
+  orderId: number
+  productId: number
+  productName: string
+  productImg: string
+  price: number
+  currency: string
 }
 
 export interface IProduct {

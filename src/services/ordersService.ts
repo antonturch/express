@@ -5,6 +5,11 @@ const getOrdersByUserId = (UserId: number) => {
     where: { UserId },
   });
 };
+const getOrderById = (id: number) => {
+  return db.Order.findOne({
+    where: { id },
+  });
+};
 
 const addNewOrder = (UserId: number, ProductId: number) => {
   return db.Order.create({ UserId, ProductId });
@@ -12,5 +17,6 @@ const addNewOrder = (UserId: number, ProductId: number) => {
 
 export default {
   getOrdersByUserId,
+  getOrderById,
   addNewOrder,
 };

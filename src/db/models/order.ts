@@ -9,8 +9,8 @@ module.exports = (sequelize: Sequelize) => {
      * The `models/index` file will call this method automatically.
      */
     id!: number;
-    userId!: number;
-    productId!: number;
+    UserId!: number;
+    ProductId!: number;
 
     static associate(models: IModels) {
       // define association here

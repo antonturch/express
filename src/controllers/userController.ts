@@ -100,7 +100,7 @@ const googleAuthRedirect = async (
         data: userToDTO(userData.dataValues),
       },
       process.env.JWT_ACCESS_SECRET as string,
-      { expiresIn: 60 }
+      { expiresIn: "10h" }
     ); // expiry in seconds
     res.cookie("jwt", token, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
