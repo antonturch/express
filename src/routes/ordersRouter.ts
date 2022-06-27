@@ -82,7 +82,7 @@ ordersRouter.post(
     next: NextFunction
   ) {
     const userId = req.params.id;
-    const productId = Number(req.body.productId);
+    const productId = req.body.productId;
 
     try {
       const order = await orderService.addNewOrder(userId, productId);
