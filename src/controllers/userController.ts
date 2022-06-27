@@ -36,12 +36,12 @@ passport.serializeUser(function (user: any, done: any) {
 });
 
 const setTokenToCookie = (
-  cookie: Response["cookie"],
+  res: Response,
   tokenType: TokenType,
   token: string,
   maxAge: number
 ) => {
-  cookie(tokenType, token, {
+  res.cookie(tokenType, token, {
     maxAge,
     httpOnly: true,
   });
@@ -70,7 +70,7 @@ const registration = async function (
     );
 
     setTokenToCookie(
-      res.cookie,
+      res,
       TokenType.RefreshToken,
       userData.refreshToken,
       30 * 24 * 60 * 60 * 1000
@@ -90,9 +90,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const userData = await userService.loginUser(email, password);
-
     setTokenToCookie(
-      res.cookie,
+      res,
       TokenType.RefreshToken,
       userData.refreshToken,
       30 * 24 * 60 * 60 * 1000
@@ -125,9 +124,7 @@ const googleAuthRedirect = async (
       { expiresIn: "10h" }
     );
 
-    res.cookie("jwt", token, {
-      maxAge: 24 * 60 * 60,
-    });
+    setTokenToCookie(res, "jwt" as TokenType, token, 24 * 60 * 60);
     res.redirect(getClientUrl(ClientPath.Products));
   } catch (e) {
     next(
@@ -162,7 +159,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
     const user = await userService.updateAccessAndRefreshTokens(refreshToken);
 
     setTokenToCookie(
-      res.cookie,
+      res,
       TokenType.RefreshToken,
       user.refreshToken,
       30 * 24 * 60 * 60 * 1000
