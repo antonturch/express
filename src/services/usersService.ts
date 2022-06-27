@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import db from "../db/models";
 import { userService } from "./index";
 import userToDTO from "../data-mappers/user";
-import { IUserFull, IUser } from "../db/modelsType";
+import { IUserFull, IUser, IRegisteredUser } from "../db/modelsType";
 import {
   BadRequestError,
   UnauthorizedError,
@@ -21,17 +21,14 @@ const registerUser = async (
   lastName: string,
   email: string,
   password: string
-) => {
+): Promise<IRegisteredUser> => {
   const hashPassword = await bcrypt.hash(password, 2);
-  const user: IUserFull = await createUser(
-    firstName,
-    lastName,
-    email,
-    hashPassword
-  );
+  const user = await createUser(firstName, lastName, email, hashPassword);
   const userDTO = userToDTO(user);
   const tokens = generateAccessAndRefreshTokens(userToDTO(user));
+
   await updateRefreshToken(user.id, tokens.refreshToken);
+
   return {
     user: {
       ...userDTO,
@@ -41,7 +38,10 @@ const registerUser = async (
   };
 };
 
-const loginUser = async (email: string, password: string) => {
+const loginUser = async (
+  email: string,
+  password: string
+): Promise<IRegisteredUser> => {
   const user = await checkCandidate(email);
   if (!user) {
     throw new BadRequestError({
@@ -92,6 +92,15 @@ const updateRefreshToken = (userId: number, refreshToken: string) => {
       },
     }
   );
+};
+
+const generateAccessToken = (
+  payload: { data: IJwtPayload },
+  expiresIn: number | string
+): string => {
+  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, {
+    expiresIn,
+  });
 };
 
 const generateAccessAndRefreshTokens = (payload: IJwtPayload) => {
@@ -204,6 +213,7 @@ export default {
   loginUser,
   checkCandidate,
   createUser,
+  generateAccessToken,
   updateRefreshToken,
   generateAccessAndRefreshTokens,
   deleteRefreshToken,

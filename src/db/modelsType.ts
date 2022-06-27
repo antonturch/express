@@ -11,12 +11,12 @@ export interface IOrder {
 }
 
 export interface IFullOrder {
-  orderId: number
-  productId: number
-  productName: string
-  productImg: string
-  price: number
-  currency: string
+  orderId: number;
+  productId: number;
+  productName: string;
+  productImg: string;
+  price: number;
+  currency: string;
 }
 
 export interface IProduct {
@@ -37,6 +37,12 @@ export interface IUser {
 
 export interface IUserFull extends IUser {
   password: string;
+  refreshToken: string;
+}
+
+export interface IRegisteredUser {
+  user: IUser;
+  accessToken: string;
   refreshToken: string;
 }
 

@@ -39,11 +39,12 @@ const setTokenToCookie = (
   res: Response,
   tokenType: TokenType,
   token: string,
-  maxAge: number
+  maxAge: number,
+  httpOnly: boolean = true
 ) => {
   res.cookie(tokenType, token, {
     maxAge,
-    httpOnly: true,
+    httpOnly,
   });
 };
 
@@ -116,15 +117,18 @@ const googleAuthRedirect = async (
       password: req.user.id,
     };
     const userData = await userService.findOrCreateUser(user);
-    let token = jwt.sign(
-      {
-        data: userToDTO(userData.dataValues),
-      },
-      process.env.JWT_ACCESS_SECRET as string,
-      { expiresIn: "10h" }
+    const token = userService.generateAccessToken(
+      { data: userToDTO(userData.dataValues) },
+      "10h"
     );
 
-    setTokenToCookie(res, "jwt" as TokenType, token, 24 * 60 * 60);
+    setTokenToCookie(
+      res,
+      "jwt" as TokenType,
+      token,
+      30 * 24 * 60 * 60 * 1000,
+      false
+    );
     res.redirect(getClientUrl(ClientPath.Products));
   } catch (e) {
     next(
