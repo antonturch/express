@@ -119,7 +119,7 @@ const googleAuthRedirect = async (
     };
     const userData = await userService.findOrCreateUser(user);
     const token = userService.generateAccessToken(
-      { data: userToDTO(userData.dataValues) },
+      { data: userToDTO(userData) },
       "10h"
     );
 
