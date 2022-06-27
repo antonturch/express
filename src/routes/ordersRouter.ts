@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { IFullOrder, IOrder, IProduct } from "../db/modelsType";
 import { orderService, productService } from "../services";
 import { authMiddleware } from "../middleware";
@@ -61,7 +62,7 @@ ordersRouter.post(
       const product = await productService.getProductById(
         order.dataValues.ProductId
       );
-      res.status(201).json({
+      res.status(StatusCodes.CREATED).json({
         orderId: order.dataValues.id,
         productId: product.id,
         productName: product.name,

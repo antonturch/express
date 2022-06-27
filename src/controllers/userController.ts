@@ -4,6 +4,7 @@ import passport from "passport";
 import { NextFunction } from "express";
 import { Strategy } from "passport-google-oauth2";
 import { Request, Response } from "express-serve-static-core";
+import { StatusCodes } from "http-status-codes";
 import { userService } from "../services";
 import { BadRequestError } from "../error-handler/custom-errors";
 import { IAuthorizedRequest } from "../data-mappers/request";
@@ -147,7 +148,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
       res.clearCookie(TokenType.RefreshToken);
     }
     res.clearCookie("jwt");
-    res.sendStatus(200);
+    res.sendStatus(StatusCodes.OK);
   } catch (e) {
     next(
       new BadRequestError({
