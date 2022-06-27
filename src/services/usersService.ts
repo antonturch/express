@@ -1,9 +1,10 @@
 import * as jwt from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import db from "../db/models";
 import { userService } from "./index";
 import userToDTO from "../data-mappers/user";
-import { IUserFull, IUser, IRegisteredUser } from "../db/modelsType";
+import { IRegisteredUser, IUserFull } from "../db/modelsType";
 import {
   BadRequestError,
   UnauthorizedError,
@@ -16,6 +17,11 @@ interface IJwtPayload {
   email: string;
 }
 
+interface TokensObj {
+  accessToken: string;
+  refreshToken: string;
+}
+
 const registerUser = async (
   firstName: string,
   lastName: string,
@@ -25,7 +31,7 @@ const registerUser = async (
   const hashPassword = await bcrypt.hash(password, 2);
   const user = await createUser(firstName, lastName, email, hashPassword);
   const userDTO = userToDTO(user);
-  const tokens = generateAccessAndRefreshTokens(userToDTO(user));
+  const tokens = generateAccessAndRefreshTokens(userDTO);
 
   await updateRefreshToken(user.id, tokens.refreshToken);
 
@@ -43,6 +49,7 @@ const loginUser = async (
   password: string
 ): Promise<IRegisteredUser> => {
   const user = await checkCandidate(email);
+
   if (!user) {
     throw new BadRequestError({
       message: `User with mail ${email} is not registered yet`,
@@ -66,7 +73,7 @@ const loginUser = async (
   };
 };
 
-const checkCandidate = (email: string) => {
+const checkCandidate = (email: string): IUserFull => {
   return db.User.findOne({
     where: { email },
   });
@@ -77,7 +84,7 @@ const createUser = (
   lastName: string,
   email: string,
   password: string
-) => {
+): IUserFull => {
   return db.User.create({ firstName, lastName, email, password });
 };
 
@@ -103,7 +110,7 @@ const generateAccessToken = (
   });
 };
 
-const generateAccessAndRefreshTokens = (payload: IJwtPayload) => {
+const generateAccessAndRefreshTokens = (payload: IJwtPayload): TokensObj => {
   const accessToken = jwt.sign(
     payload,
     process.env.JWT_ACCESS_SECRET as string,
@@ -121,26 +128,22 @@ const generateAccessAndRefreshTokens = (payload: IJwtPayload) => {
   return { accessToken, refreshToken };
 };
 
-const validateAccessToken = (accessToken: string) => {
+const validateAccessToken = (
+  accessToken: string
+): JwtPayload | string | null => {
   try {
-    const userData = jwt.verify(
-      accessToken,
-      process.env.JWT_ACCESS_SECRET as string
-    );
-    return userData;
+    return jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET as string);
   } catch (e) {
     console.log(e);
     return null;
   }
 };
 
-const validateRefreshToken = (refreshToken: string): IUser | null => {
+const validateRefreshToken = (
+  refreshToken: string
+): JwtPayload | string | null => {
   try {
-    const userData = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET as string
-    );
-    return userData as IUser;
+    return jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string);
   } catch (e) {
     console.log(e);
     return null;
@@ -172,7 +175,7 @@ const updateAccessAndRefreshTokens = async (refreshToken: string) => {
   }
   const user = validateRefreshToken(refreshToken);
   const tokenFromDb = findRefreshToken(refreshToken);
-  if (!user || !tokenFromDb) {
+  if (!user || typeof user === "string" || !tokenFromDb) {
     throw new UnauthorizedError({
       message: "Token is invalid or not found on db",
     });
