@@ -125,7 +125,7 @@ const googleAuthRedirect = async (
     );
 
     res.cookie("jwt", token, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60,
     });
     res.redirect("http://localhost:3000/products");
   } catch (e) {
