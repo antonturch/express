@@ -10,10 +10,10 @@ ordersRouter.get(
   async function (req: Request, res: Response, next: NextFunction) {
     const userId = Number(req.params.id);
     try {
-      const ordersList: IOrder[] = await orderService.getOrdersByUserId(userId);
+      const orders: IOrder[] = await orderService.getOrdersByUserId(userId);
       const products: IProduct[] = await productService.getProducts();
       let userOrders: IFullOrder[] = [];
-      ordersList.map((ord) => {
+      orders.map((ord) => {
         for (let i = 0; i < products.length; i++) {
           if (products[i].id === ord.ProductId) {
             userOrders = [

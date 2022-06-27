@@ -144,7 +144,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
     const { refreshToken } = req.cookies;
     if (refreshToken) {
       await userService.deleteRefreshToken(refreshToken);
-      res.clearCookie("refreshToken");
+      res.clearCookie(TokenType.RefreshToken);
     }
     res.clearCookie("jwt");
     res.sendStatus(200);
