@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { Sequelize } from "sequelize";
-import { Stage } from "../../utils/stage";
+import { Stage } from "../../utils";
 
 const basename = path.basename(__filename);
 const env = process.env || Stage.Dev;

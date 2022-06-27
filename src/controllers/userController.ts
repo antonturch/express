@@ -8,6 +8,7 @@ import { userService } from "../services";
 import { BadRequestError } from "../error-handler/custom-errors";
 import { IAuthorizedRequest } from "../data-mappers/request";
 import userToDTO from "../data-mappers/user";
+import { TokenType } from "../utils";
 
 dotenv.config();
 
@@ -33,6 +34,18 @@ passport.serializeUser(function (user: any, done: any) {
   done(null, user);
 });
 
+const setTokenToCookie = (
+  cookie: Response["cookie"],
+  tokenType: TokenType,
+  token: string,
+  maxAge: number
+) => {
+  cookie(tokenType, token, {
+    maxAge,
+    httpOnly: true,
+  });
+};
+
 const registration = async function (
   req: Request,
   res: Response,
@@ -54,10 +67,14 @@ const registration = async function (
       email,
       password
     );
-    res.cookie("refreshToken", userData.refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+
+    setTokenToCookie(
+      res.cookie,
+      TokenType.RefreshToken,
+      userData.refreshToken,
+      30 * 24 * 60 * 60 * 1000
+    );
+
     res.json(userData);
   } catch (e) {
     next(
@@ -72,10 +89,14 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const userData = await userService.loginUser(email, password);
-    res.cookie("refreshToken", userData.refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+
+    setTokenToCookie(
+      res.cookie,
+      TokenType.RefreshToken,
+      userData.refreshToken,
+      30 * 24 * 60 * 60 * 1000
+    );
+
     res.json(userData);
   } catch (e) {
     next(e);
@@ -101,7 +122,8 @@ const googleAuthRedirect = async (
       },
       process.env.JWT_ACCESS_SECRET as string,
       { expiresIn: "10h" }
-    ); // expiry in seconds
+    );
+
     res.cookie("jwt", token, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
@@ -137,10 +159,14 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
     const user = await userService.updateAccessAndRefreshTokens(refreshToken);
-    res.cookie("refreshToken", user.refreshToken, {
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+
+    setTokenToCookie(
+      res.cookie,
+      TokenType.RefreshToken,
+      user.refreshToken,
+      30 * 24 * 60 * 60 * 1000
+    );
+
     res.json(user);
   } catch (e) {
     next(
