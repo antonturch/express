@@ -8,7 +8,8 @@ import { userService } from "../services";
 import { BadRequestError } from "../error-handler/custom-errors";
 import { IAuthorizedRequest } from "../data-mappers/request";
 import userToDTO from "../data-mappers/user";
-import { TokenType } from "../utils";
+import { getClientUrl, TokenType } from "../utils";
+import { ClientPath } from "../utils/ClientPath";
 
 dotenv.config();
 
@@ -127,7 +128,7 @@ const googleAuthRedirect = async (
     res.cookie("jwt", token, {
       maxAge: 24 * 60 * 60,
     });
-    res.redirect("http://localhost:3000/products");
+    res.redirect(getClientUrl(ClientPath.Products));
   } catch (e) {
     next(
       new BadRequestError({
