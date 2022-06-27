@@ -48,7 +48,7 @@ const registration = async function (
         })
       );
     }
-    const userData = await userService.registrationUser(
+    const userData = await userService.registerUser(
       firstName,
       lastName,
       email,
@@ -94,7 +94,7 @@ const googleAuthRedirect = async (
       email: req.user.email,
       password: req.user.id,
     };
-    const userData = await userService.findOrCreate(user);
+    const userData = await userService.findOrCreateUser(user);
     let token = jwt.sign(
       {
         data: userToDTO(userData.dataValues),
@@ -119,7 +119,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
     if (refreshToken) {
-      await userService.deleteToken(refreshToken);
+      await userService.deleteRefreshToken(refreshToken);
       res.clearCookie("refreshToken");
     }
     res.clearCookie("jwt");
@@ -136,7 +136,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
-    const user = await userService.updateToken(refreshToken);
+    const user = await userService.updateAccessAndRefreshTokens(refreshToken);
     res.cookie("refreshToken", user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,

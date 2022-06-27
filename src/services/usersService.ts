@@ -16,7 +16,7 @@ interface IJwtPayload {
   email: string;
 }
 
-const registrationUser = async (
+const registerUser = async (
   firstName: string,
   lastName: string,
   email: string,
@@ -30,8 +30,8 @@ const registrationUser = async (
     hashPassword
   );
   const userDTO = userToDTO(user);
-  const tokens = generateJwt(userToDTO(user));
-  await updateUser(user.id, tokens.refreshToken);
+  const tokens = generateAccessAndRefreshTokens(userToDTO(user));
+  await updateRefreshToken(user.id, tokens.refreshToken);
   return {
     user: {
       ...userDTO,
@@ -55,8 +55,8 @@ const loginUser = async (email: string, password: string) => {
     });
   }
   const userDTO = userToDTO(user);
-  const tokens = generateJwt(userDTO);
-  await updateUser(user.id, tokens.refreshToken);
+  const tokens = generateAccessAndRefreshTokens(userDTO);
+  await updateRefreshToken(user.id, tokens.refreshToken);
   return {
     user: {
       ...userDTO,
@@ -81,7 +81,7 @@ const createUser = (
   return db.User.create({ firstName, lastName, email, password });
 };
 
-const updateUser = (userId: number, refreshToken: string) => {
+const updateRefreshToken = (userId: number, refreshToken: string) => {
   return db.User.update(
     {
       refreshToken,
@@ -94,7 +94,7 @@ const updateUser = (userId: number, refreshToken: string) => {
   );
 };
 
-const generateJwt = (payload: IJwtPayload) => {
+const generateAccessAndRefreshTokens = (payload: IJwtPayload) => {
   const accessToken = jwt.sign(
     payload,
     process.env.JWT_ACCESS_SECRET as string,
@@ -138,7 +138,7 @@ const validateRefreshToken = (refreshToken: string): IUser | null => {
   }
 };
 
-const deleteToken = (refreshToken: string) => {
+const deleteRefreshToken = (refreshToken: string) => {
   return db.User.update(
     {
       refreshToken: null,
@@ -151,26 +151,26 @@ const deleteToken = (refreshToken: string) => {
   );
 };
 
-const findToken = (refreshToken: string) => {
+const findRefreshToken = (refreshToken: string) => {
   return db.User.findOne({
     where: { refreshToken },
   });
 };
 
-const updateToken = async (refreshToken: string) => {
+const updateAccessAndRefreshTokens = async (refreshToken: string) => {
   if (!refreshToken) {
     throw new UnauthorizedError({ message: "Refresh token is missed" });
   }
   const user = validateRefreshToken(refreshToken);
-  const tokenFromDb = findToken(refreshToken);
+  const tokenFromDb = findRefreshToken(refreshToken);
   if (!user || !tokenFromDb) {
     throw new UnauthorizedError({
       message: "Token is invalid or not found on db",
     });
   }
   const userDTO = userToDTO(user as IUserFull);
-  const tokens = generateJwt(userDTO);
-  await updateUser(user.id, tokens.refreshToken);
+  const tokens = generateAccessAndRefreshTokens(userDTO);
+  await updateRefreshToken(user.id, tokens.refreshToken);
   return {
     user: { ...userDTO },
     accessToken: tokens.accessToken,
@@ -178,7 +178,7 @@ const updateToken = async (refreshToken: string) => {
   };
 };
 
-async function findOrCreate(user: any) {
+async function findOrCreateUser(user: any) {
   const candidate = await userService.checkCandidate(user.email);
   if (!candidate) {
     const registeredUser = await userService.createUser(
@@ -200,14 +200,14 @@ async function findOrCreate(user: any) {
 }
 
 export default {
-  registrationUser,
+  registerUser,
   loginUser,
   checkCandidate,
   createUser,
-  updateUser,
-  generateJwt,
-  deleteToken,
-  updateToken,
+  updateRefreshToken,
+  generateAccessAndRefreshTokens,
+  deleteRefreshToken,
+  updateAccessAndRefreshTokens,
   validateAccessToken,
-  findOrCreate,
+  findOrCreateUser,
 };
