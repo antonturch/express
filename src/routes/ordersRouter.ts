@@ -14,6 +14,7 @@ const ordersRouter = express.Router();
 
 ordersRouter.get(
   "/:id",
+  authMiddleware,
   param("id").toInt(),
   async function (
     req: Request<OrderRequestParams>,
@@ -48,11 +49,11 @@ ordersRouter.get(
     } catch (e) {
       next(e);
     }
-  },
-  authMiddleware
+  }
 );
 ordersRouter.get(
   "/:id/payment",
+  authMiddleware,
   param("id").toInt(),
   async function (
     req: Request<OrderRequestParams>,
@@ -68,12 +69,12 @@ ordersRouter.get(
     } catch (e) {
       next(e);
     }
-  },
-  authMiddleware
+  }
 );
 
 ordersRouter.post(
   "/:id",
+  authMiddleware,
   body("productId").toInt(),
   param("id").toInt(),
   async function (
@@ -101,8 +102,7 @@ ordersRouter.post(
     } catch (e) {
       next(e);
     }
-  },
-  authMiddleware
+  }
 );
 
 export default ordersRouter;
