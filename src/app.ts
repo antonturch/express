@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import db from "./db/models";
 import { authRouter, ordersRouter, productsRouter } from "./routes";
-import { authMiddleware, errorMiddleware } from "./middleware/";
+import { errorMiddleware } from "./middleware/";
 
 const PORT = process.env.PORT || 5000;
 
@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use("/products", productsRouter);
-app.use("/orders", authMiddleware, ordersRouter);
+app.use("/orders", ordersRouter);
 app.use("/auth", authRouter);
 
 app.use(errorMiddleware);

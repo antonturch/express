@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { IFullOrder, IOrder, IProduct } from "../db/modelsType";
 import { orderService, productService } from "../services";
+import { authMiddleware } from "../middleware";
 
 const ordersRouter = express.Router();
 
@@ -33,7 +34,8 @@ ordersRouter.get(
     } catch (e) {
       next(e);
     }
-  }
+  },
+  authMiddleware
 );
 ordersRouter.get(
   "/:id/payment",
@@ -45,7 +47,8 @@ ordersRouter.get(
     } catch (e) {
       next(e);
     }
-  }
+  },
+  authMiddleware
 );
 
 ordersRouter.post(
@@ -69,7 +72,8 @@ ordersRouter.post(
     } catch (e) {
       next(e);
     }
-  }
+  },
+  authMiddleware
 );
 
 export default ordersRouter;
