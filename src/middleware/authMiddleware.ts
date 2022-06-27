@@ -3,11 +3,12 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import userServices from "../services/usersService";
 import { UnauthorizedError } from "../error-handler/custom-errors";
+import { OrderRequestParams } from "../types";
 
 dotenv.config();
 
 export default function authMiddleware(
-  req: Request,
+  req: Request<OrderRequestParams>,
   res: Response,
   next: NextFunction
 ) {
