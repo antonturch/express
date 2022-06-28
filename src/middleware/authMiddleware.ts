@@ -1,14 +1,19 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import userServices from "../services/usersService";
 import { UnauthorizedError } from "../error-handler/custom-errors";
 import { OrderRequestParams } from "../types";
+import { IUser } from "../db/modelsType";
 
 dotenv.config();
 
+interface AuthMiddlewareRequest extends OrderRequestParams {
+  user: IUser;
+}
+
 export default function authMiddleware(
-  req: Request<OrderRequestParams>,
+  req: Request<AuthMiddlewareRequest>,
   res: Response,
   next: NextFunction
 ) {
@@ -21,8 +26,7 @@ export default function authMiddleware(
     const refreshToken = req.cookies["refreshToken"];
     if (refreshToken && accessToken && accessToken !== "null") {
       const userData = userServices.validateAccessToken(accessToken);
-      // @ts-ignore
-      req.user = userData;
+      req.user = userData as IUser;
       if (!userData) {
         return next(
           new UnauthorizedError({ message: `User doesn't authorized` })

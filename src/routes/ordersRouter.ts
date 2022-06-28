@@ -16,6 +16,7 @@ ordersRouter.get(
   validationMiddleware,
   ordersController.getOrdersByUserId
 );
+
 ordersRouter.get(
   "/:id/payment",
   authMiddleware,
