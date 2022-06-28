@@ -40,6 +40,8 @@ export interface IUserFull extends IUser {
   refreshToken: string;
 }
 
+export type GoogleUser = Omit<IUserFull, "id" | "refreshToken">;
+
 export interface UserWithTokens {
   user: IUser;
   accessToken: string;

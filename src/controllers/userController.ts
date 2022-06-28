@@ -11,6 +11,7 @@ import { IAuthorizedRequest } from "../data-mappers/request";
 import userToDTO from "../data-mappers/user";
 import { getClientUrl, TokenType } from "../utils";
 import { ClientPath } from "../utils/ClientPath";
+import { GoogleUser } from "../db/modelsType";
 
 dotenv.config();
 
@@ -111,7 +112,7 @@ const googleAuthRedirect = async (
   next: NextFunction
 ) => {
   try {
-    const user = {
+    const user: GoogleUser = {
       firstName: req.user.given_name,
       lastName: req.user.family_name,
       email: req.user.email,

@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import db from "../db/models";
 import { userService } from "./index";
 import userToDTO from "../data-mappers/user";
-import { UserWithTokens, IUserFull } from "../db/modelsType";
+import { GoogleUser, IUserFull, UserWithTokens } from "../db/modelsType";
 import {
   BadRequestError,
   UnauthorizedError,
@@ -169,7 +169,9 @@ const findRefreshToken = (refreshToken: string) => {
   });
 };
 
-const updateAccessAndRefreshTokens = async (refreshToken: string) => {
+const updateAccessAndRefreshTokens = async (
+  refreshToken: string
+): Promise<UserWithTokens> => {
   if (!refreshToken) {
     throw new UnauthorizedError({ message: "Refresh token is missed" });
   }
@@ -190,19 +192,18 @@ const updateAccessAndRefreshTokens = async (refreshToken: string) => {
   };
 };
 
-async function findOrCreateUser(user: any) {
+async function findOrCreateUser(user: GoogleUser): Promise<IUserFull> {
   const candidate = await userService.checkCandidate(user.email);
   if (!candidate) {
-    const registeredUser = await userService.createUser(
+    return userService.createUser(
       user.firstName,
       user.lastName,
       user.email,
       user.password
     );
-    return registeredUser;
     //todo check the password here over
   } else {
-    if (!candidate.password === user.password) {
+    if (candidate.password !== user.password) {
       throw new UnauthorizedError({
         message: `User data from google is invalid`,
       });
