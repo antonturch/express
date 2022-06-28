@@ -3,7 +3,7 @@ import { authMiddleware } from "../middleware";
 import ordersController from "../controllers/ordersController";
 import {
   GetOrderBodyValidationSchema,
-  GetOrderParamsValidationSchema,
+  GetItemByIdInParamsValidationSchema,
 } from "../middleware/validationSchemas";
 import { validationMiddleware } from "../middleware/validationMiddleware";
 
@@ -12,14 +12,14 @@ const ordersRouter = express.Router();
 ordersRouter.get(
   "/:id",
   authMiddleware,
-  GetOrderParamsValidationSchema,
+  GetItemByIdInParamsValidationSchema,
   validationMiddleware,
   ordersController.getOrdersByUserId
 );
 ordersRouter.get(
   "/:id/payment",
   authMiddleware,
-  GetOrderParamsValidationSchema,
+  GetItemByIdInParamsValidationSchema,
   validationMiddleware,
   ordersController.getOrderById
 );
@@ -27,7 +27,7 @@ ordersRouter.get(
 ordersRouter.post(
   "/:id",
   authMiddleware,
-  GetOrderParamsValidationSchema,
+  GetItemByIdInParamsValidationSchema,
   GetOrderBodyValidationSchema,
   validationMiddleware,
   ordersController.createNewOrder

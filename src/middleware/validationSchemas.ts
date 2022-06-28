@@ -38,5 +38,5 @@ export const LoginValidationSchema = [
     .bail(),
 ];
 
-export const GetOrderParamsValidationSchema = [param("id").toInt()];
+export const GetItemByIdInParamsValidationSchema = [param("id").toInt()];
 export const GetOrderBodyValidationSchema = [body("productId").toInt()];
