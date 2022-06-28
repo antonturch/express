@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import db from "../db/models";
 import { userService } from "./index";
 import userToDTO from "../data-mappers/user";
-import { IRegisteredUser, IUserFull } from "../db/modelsType";
+import { UserWithTokens, IUserFull } from "../db/modelsType";
 import {
   BadRequestError,
   UnauthorizedError,
@@ -27,7 +27,7 @@ const registerUser = async (
   lastName: string,
   email: string,
   password: string
-): Promise<IRegisteredUser> => {
+): Promise<UserWithTokens> => {
   const hashPassword = await bcrypt.hash(password, 2);
   const user = await createUser(firstName, lastName, email, hashPassword);
   const userDTO = userToDTO(user);
@@ -47,7 +47,7 @@ const registerUser = async (
 const loginUser = async (
   email: string,
   password: string
-): Promise<IRegisteredUser> => {
+): Promise<UserWithTokens> => {
   const user = await checkCandidate(email);
 
   if (!user) {

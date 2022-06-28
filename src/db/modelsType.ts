@@ -40,7 +40,7 @@ export interface IUserFull extends IUser {
   refreshToken: string;
 }
 
-export interface IRegisteredUser {
+export interface UserWithTokens {
   user: IUser;
   accessToken: string;
   refreshToken: string;
