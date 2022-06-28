@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 import express from "express";
 import passport from "passport";
 import userController from "../controllers/userController";
+import { validationMiddleware } from "../middleware/validationMiddleware";
 import {
   LoginValidationSchema,
   registrationValidationSchema,
-  validationMiddleware,
-} from "../middleware/validationMiddleware";
+} from "../middleware/validationSchemas";
 
 dotenv.config();
 
