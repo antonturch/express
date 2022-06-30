@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { ParamsDictionary } from "express-serve-static-core";
 import { OrderRequestParams } from "../types";
 import { IFullOrder, IOrder, IProduct } from "../db/modelsType";
 import { orderService, productService } from "../services";
 import { OrderRequestBody } from "../middleware/authMiddleware";
-import { ParamsDictionary } from "express-serve-static-core";
 
 interface CreateOrderBodyRequest extends OrderRequestBody {
   productId: number;
