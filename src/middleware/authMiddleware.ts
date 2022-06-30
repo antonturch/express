@@ -1,19 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { ParamsDictionary } from "express-serve-static-core";
 import userServices from "../services/usersService";
 import { UnauthorizedError } from "../error-handler/custom-errors";
-import { OrderRequestParams } from "../types";
 import { IUser } from "../db/modelsType";
 
 dotenv.config();
 
-interface AuthMiddlewareRequest extends OrderRequestParams {
+export interface OrderRequestBody {
   user: IUser;
 }
 
 export default function authMiddleware(
-  req: Request<AuthMiddlewareRequest>,
+  req: Request<ParamsDictionary, any, OrderRequestBody>,
   res: Response,
   next: NextFunction
 ) {
@@ -23,10 +23,9 @@ export default function authMiddleware(
   try {
     const accessToken = req.headers.authorization?.split(" ")[1];
     const googleToken = req.cookies["jwt"];
-    const refreshToken = req.cookies["refreshToken"];
-    if (refreshToken && accessToken && accessToken !== "null") {
+    if (accessToken && accessToken !== "null") {
       const userData = userServices.validateAccessToken(accessToken);
-      req.user = userData as IUser;
+      req.body.user = userData as IUser;
       if (!userData) {
         return next(
           new UnauthorizedError({ message: `User doesn't authorized` })
