@@ -9,21 +9,9 @@ import { validationMiddleware } from "../middleware/validationMiddleware";
 
 const ordersRouter = express.Router();
 
-ordersRouter.get(
-  "/:id",
-  authMiddleware,
-  GetItemByIdInParamsValidationSchema,
-  validationMiddleware,
-  ordersController.getOrdersByUserId
-);
+ordersRouter.get("/:id", authMiddleware, ordersController.getOrdersByUserId);
 
-ordersRouter.get(
-  "/:id/payment",
-  authMiddleware,
-  GetItemByIdInParamsValidationSchema,
-  validationMiddleware,
-  ordersController.getOrderById
-);
+ordersRouter.get("/:id/payment", authMiddleware, ordersController.getOrderById);
 
 ordersRouter.post(
   "/:id",
@@ -31,6 +19,7 @@ ordersRouter.post(
   GetItemByIdInParamsValidationSchema,
   GetOrderBodyValidationSchema,
   validationMiddleware,
+  //@ts-ignore
   ordersController.createNewOrder
 );
 

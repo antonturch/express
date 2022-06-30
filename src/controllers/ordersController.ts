@@ -3,17 +3,19 @@ import { StatusCodes } from "http-status-codes";
 import { OrderRequestParams } from "../types";
 import { IFullOrder, IOrder, IProduct } from "../db/modelsType";
 import { orderService, productService } from "../services";
+import { OrderRequestBody } from "../middleware/authMiddleware";
+import { ParamsDictionary } from "express-serve-static-core";
 
-interface OrderRequestBody {
+interface CreateOrderBodyRequest extends OrderRequestBody {
   productId: number;
 }
 
 const getOrdersByUserId = async (
-  req: Request<OrderRequestParams>,
+  req: Request<ParamsDictionary, any, OrderRequestBody>,
   res: Response,
   next: NextFunction
 ) => {
-  const userId = req.params.id;
+  const userId = req.body.user.id;
 
   try {
     const orders: IOrder[] = await orderService.getOrdersByUserId(userId);
@@ -44,11 +46,11 @@ const getOrdersByUserId = async (
 };
 
 const getOrderById = async (
-  req: Request<OrderRequestParams>,
+  req: Request<ParamsDictionary, any, OrderRequestBody>,
   res: Response,
   next: NextFunction
 ) => {
-  const orderId = req.params.id;
+  const orderId = req.body.user.id;
 
   try {
     const order: IOrder = await orderService.getOrderById(orderId);
@@ -60,11 +62,11 @@ const getOrderById = async (
 };
 
 const createNewOrder = async (
-  req: Request<OrderRequestParams, any, OrderRequestBody>,
+  req: Request<OrderRequestParams, any, CreateOrderBodyRequest>,
   res: Response,
   next: NextFunction
 ) => {
-  const userId = req.params.id;
+  const userId = req.body.user.id;
   const productId = req.body.productId;
 
   try {
