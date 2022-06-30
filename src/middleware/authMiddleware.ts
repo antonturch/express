@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { ParamsDictionary } from "express-serve-static-core";
-import userServices from "../services/usersService";
+import tokenService from "../services/tokenService";
 import { UnauthorizedError } from "../error-handler/custom-errors";
 import { IUser } from "../db/modelsType";
 
@@ -24,7 +24,7 @@ export default function authMiddleware(
     const accessToken = req.headers.authorization?.split(" ")[1];
     const googleToken = req.cookies["jwt"];
     if (accessToken && accessToken !== "null") {
-      const userData = userServices.validateAccessToken(accessToken);
+      const userData = tokenService.validateAccessToken(accessToken);
       req.body.user = userData as IUser;
       if (!userData) {
         return next(

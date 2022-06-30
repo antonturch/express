@@ -12,6 +12,7 @@ import userToDTO from "../data-mappers/user";
 import { getClientUrl, TokenType } from "../utils";
 import { ClientPath } from "../utils/ClientPath";
 import { GoogleUser } from "../db/modelsType";
+import tokenService from "../services/tokenService";
 
 dotenv.config();
 
@@ -76,7 +77,7 @@ const registration = async function (
       res,
       TokenType.RefreshToken,
       userData.refreshToken,
-      30 * 24 * 60 * 60 * 1000
+      Number(process.env.JWT_REFRESH_LIFETIME)
     );
 
     res.json(userData);
@@ -97,7 +98,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       res,
       TokenType.RefreshToken,
       userData.refreshToken,
-      30 * 24 * 60 * 60 * 1000
+      Number(process.env.JWT_REFRESH_LIFETIME),
+      false
     );
 
     res.json(userData);
@@ -119,16 +121,16 @@ const googleAuthRedirect = async (
       password: req.user.id,
     };
     const userData = await userService.findOrCreateUser(user);
-    const token = userService.generateAccessToken(
+    const accessToken = tokenService.generateAccessToken(
       { data: userToDTO(userData) },
-      "10h"
+      Number(process.env.JWT_ACCESS_LIFETIME)
     );
 
     setTokenToCookie(
       res,
       "jwt" as TokenType,
-      token,
-      30 * 24 * 60 * 60 * 1000,
+      accessToken,
+      Number(process.env.JWT_ACCESS_LIFETIME),
       false
     );
     res.redirect(getClientUrl(ClientPath.Products));
@@ -145,7 +147,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
     if (refreshToken) {
-      await userService.deleteRefreshToken(refreshToken);
+      await tokenService.deleteRefreshToken(refreshToken);
       res.clearCookie(TokenType.RefreshToken);
     }
     res.clearCookie("jwt");
@@ -168,7 +170,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
       res,
       TokenType.RefreshToken,
       user.refreshToken,
-      30 * 24 * 60 * 60 * 1000
+      Number(process.env.JWT_REFRESH_LIFETIME)
     );
 
     res.json(user);

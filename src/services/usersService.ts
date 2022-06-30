@@ -1,5 +1,3 @@
-import * as jwt from "jsonwebtoken";
-import { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import db from "../db/models";
 import { userService } from "./index";
@@ -9,18 +7,7 @@ import {
   BadRequestError,
   UnauthorizedError,
 } from "../error-handler/custom-errors";
-
-interface IJwtPayload {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
-interface TokensObj {
-  accessToken: string;
-  refreshToken: string;
-}
+import tokenService from "./tokenService";
 
 const registerUser = async (
   firstName: string,
@@ -31,9 +18,9 @@ const registerUser = async (
   const hashPassword = await bcrypt.hash(password, 2);
   const user = await createUser(firstName, lastName, email, hashPassword);
   const userDTO = userToDTO(user);
-  const tokens = generateAccessAndRefreshTokens(userDTO);
+  const tokens = tokenService.generateAccessAndRefreshTokens(userDTO);
 
-  await updateRefreshToken(user.id, tokens.refreshToken);
+  await tokenService.updateRefreshToken(user.id, tokens.refreshToken);
 
   return {
     user: {
@@ -62,8 +49,8 @@ const loginUser = async (
     });
   }
   const userDTO = userToDTO(user);
-  const tokens = generateAccessAndRefreshTokens(userDTO);
-  await updateRefreshToken(user.id, tokens.refreshToken);
+  const tokens = tokenService.generateAccessAndRefreshTokens(userDTO);
+  await tokenService.updateRefreshToken(user.id, tokens.refreshToken);
   return {
     user: {
       ...userDTO,
@@ -88,84 +75,9 @@ const createUser = (
   return db.User.create({ firstName, lastName, email, password });
 };
 
-const updateRefreshToken = (userId: number, refreshToken: string) => {
-  return db.User.update(
-    {
-      refreshToken,
-    },
-    {
-      where: {
-        id: userId,
-      },
-    }
-  );
-};
-
-const generateAccessToken = (
-  payload: { data: IJwtPayload },
-  expiresIn: number | string
-): string => {
-  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, {
-    expiresIn,
-  });
-};
-
-const generateAccessAndRefreshTokens = (payload: IJwtPayload): TokensObj => {
-  const accessToken = jwt.sign(
-    payload,
-    process.env.JWT_ACCESS_SECRET as string,
-    {
-      expiresIn: "15s",
-    }
-  );
-  const refreshToken = jwt.sign(
-    payload,
-    process.env.JWT_REFRESH_SECRET as string,
-    {
-      expiresIn: "30s",
-    }
-  );
-  return { accessToken, refreshToken };
-};
-
-const validateAccessToken = (
-  accessToken: string
-): JwtPayload | string | null => {
-  try {
-    return jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET as string);
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const validateRefreshToken = (
-  refreshToken: string
-): JwtPayload | string | null => {
-  try {
-    return jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string);
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const deleteRefreshToken = (refreshToken: string) => {
-  return db.User.update(
-    {
-      refreshToken: null,
-    },
-    {
-      where: {
-        refreshToken,
-      },
-    }
-  );
-};
-
-const findRefreshToken = (refreshToken: string) => {
+const findUserById = (id: number) => {
   return db.User.findOne({
-    where: { refreshToken },
+    where: { id },
   });
 };
 
@@ -175,16 +87,23 @@ const updateAccessAndRefreshTokens = async (
   if (!refreshToken) {
     throw new UnauthorizedError({ message: "Refresh token is missed" });
   }
-  const user = validateRefreshToken(refreshToken);
-  const tokenFromDb = findRefreshToken(refreshToken);
-  if (!user || typeof user === "string" || !tokenFromDb) {
+  const user = tokenService.validateRefreshToken(refreshToken);
+  if (!user || typeof user === "string") {
     throw new UnauthorizedError({
-      message: "Token is invalid or not found on db",
+      message: "Token is invalid or not found in db",
+    });
+  }
+  const userFromDb = await findUserById(user.id);
+  console.log("user type", user);
+  console.log("userFromDb", userFromDb);
+  if (!userFromDb) {
+    throw new UnauthorizedError({
+      message: "User id is wrong and was not found in db",
     });
   }
   const userDTO = userToDTO(user as IUserFull);
-  const tokens = generateAccessAndRefreshTokens(userDTO);
-  await updateRefreshToken(user.id, tokens.refreshToken);
+  const tokens = tokenService.generateAccessAndRefreshTokens(userDTO);
+  await tokenService.updateRefreshToken(user.id, tokens.refreshToken);
   return {
     user: { ...userDTO },
     accessToken: tokens.accessToken,
@@ -217,11 +136,6 @@ export default {
   loginUser,
   checkCandidate,
   createUser,
-  generateAccessToken,
-  updateRefreshToken,
-  generateAccessAndRefreshTokens,
-  deleteRefreshToken,
   updateAccessAndRefreshTokens,
-  validateAccessToken,
   findOrCreateUser,
 };
