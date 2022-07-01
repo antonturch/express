@@ -1,53 +1,50 @@
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
-import passport from "passport";
 import { NextFunction } from "express";
-import { Strategy } from "passport-google-oauth2";
 import { Request, Response } from "express-serve-static-core";
 import { StatusCodes } from "http-status-codes";
+import { OAuth2Client } from "google-auth-library";
 import { userService } from "../services";
 import { BadRequestError } from "../error-handler/custom-errors";
-import { IAuthorizedRequest } from "../data-mappers/request";
-import userToDTO from "../data-mappers/user";
-import { getClientUrl, TokenType } from "../utils";
-import { ClientPath } from "../utils/ClientPath";
-import { GoogleUser } from "../db/modelsType";
+import { TokenType } from "../utils";
 import tokenService from "../services/tokenService";
 
 dotenv.config();
 
-passport.use(
-  new Strategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      callbackURL: process.env.CALLBACK_GOOGLE_URL as string,
-    },
-    function (
-      accessToken: string,
-      refreshToken: string,
-      profile: any,
-      done: any
-    ) {
-      return done(null, profile);
-    }
-  )
-);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-passport.serializeUser(function (user: any, done: any) {
-  done(null, user);
-});
+const googleSignInClient = async (req: Request, res: Response) => {
+  try {
+    const { googleToken } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.CLIENT_ID,
+    });
+    // @ts-ignore
+    const { email, given_name, family_name, sub } = ticket.getPayload();
+    const user = await userService.checkCandidate(email);
+
+    const userData = user
+      ? await userService.loginUser(email, sub)
+      : await userService.registerUser(given_name, family_name, email, sub);
+    setTokenToCookie(res, TokenType.RefreshToken, userData.refreshToken, 30000);
+
+    res.status(StatusCodes.OK).json(userData);
+  } catch (e) {
+    new BadRequestError({
+      message: `Error during authentication`,
+    });
+  }
+};
 
 const setTokenToCookie = (
   res: Response,
   tokenType: TokenType,
   token: string,
-  maxAge: number,
-  httpOnly: boolean = true
+  maxAge: number
 ) => {
   res.cookie(tokenType, token, {
     maxAge,
-    httpOnly,
+    httpOnly: true,
   });
 };
 
@@ -98,48 +95,12 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       res,
       TokenType.RefreshToken,
       userData.refreshToken,
-      Number(process.env.JWT_REFRESH_LIFETIME),
-      false
+      Number(process.env.JWT_REFRESH_LIFETIME)
     );
 
     res.json(userData);
   } catch (e) {
     next(e);
-  }
-};
-
-const googleAuthRedirect = async (
-  req: IAuthorizedRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const user: GoogleUser = {
-      firstName: req.user.given_name,
-      lastName: req.user.family_name,
-      email: req.user.email,
-      password: req.user.id,
-    };
-    const userData = await userService.findOrCreateUser(user);
-    const accessToken = tokenService.generateAccessToken(
-      { data: userToDTO(userData) },
-      Number(process.env.JWT_ACCESS_LIFETIME)
-    );
-
-    setTokenToCookie(
-      res,
-      "jwt" as TokenType,
-      accessToken,
-      Number(process.env.JWT_ACCESS_LIFETIME),
-      false
-    );
-    res.redirect(getClientUrl(ClientPath.Products));
-  } catch (e) {
-    next(
-      new BadRequestError({
-        message: `Error during google login. Incorrect credentials`,
-      })
-    );
   }
 };
 
@@ -150,7 +111,6 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
       await tokenService.deleteRefreshToken(refreshToken);
       res.clearCookie(TokenType.RefreshToken);
     }
-    res.clearCookie("jwt");
     res.sendStatus(StatusCodes.OK);
   } catch (e) {
     next(
@@ -164,6 +124,9 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+      return;
+    }
     const user = await userService.updateAccessAndRefreshTokens(refreshToken);
 
     setTokenToCookie(
@@ -172,7 +135,6 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
       user.refreshToken,
       Number(process.env.JWT_REFRESH_LIFETIME)
     );
-
     res.json(user);
   } catch (e) {
     next(
@@ -188,5 +150,5 @@ export default {
   login,
   logout,
   refresh,
-  googleAuthRedirect,
+  googleSignInClient,
 };
