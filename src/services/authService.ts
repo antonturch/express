@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
 import db from "../db/models";
-import { userService } from "./index";
 import userToDTO from "../data-mappers/user";
-import { GoogleUser, IUserFull, UserWithTokens } from "../db/modelsType";
+import { IUserFull, UserWithTokens } from "../db/modelsType";
 import {
   BadRequestError,
   UnauthorizedError,
@@ -94,8 +93,6 @@ const updateAccessAndRefreshTokens = async (
     });
   }
   const userFromDb = await findUserById(user.id);
-  console.log("user type", user);
-  console.log("userFromDb", userFromDb);
   if (!userFromDb) {
     throw new UnauthorizedError({
       message: "User id is wrong and was not found in db",
@@ -111,31 +108,10 @@ const updateAccessAndRefreshTokens = async (
   };
 };
 
-async function findOrCreateUser(user: GoogleUser): Promise<IUserFull> {
-  const candidate = await userService.checkCandidate(user.email);
-  if (!candidate) {
-    return userService.createUser(
-      user.firstName,
-      user.lastName,
-      user.email,
-      user.password
-    );
-    //todo check the password here over
-  } else {
-    if (candidate.password !== user.password) {
-      throw new UnauthorizedError({
-        message: `User data from google is invalid`,
-      });
-    }
-    return candidate;
-  }
-}
-
 export default {
   registerUser,
   loginUser,
   checkCandidate,
   createUser,
   updateAccessAndRefreshTokens,
-  findOrCreateUser,
 };
