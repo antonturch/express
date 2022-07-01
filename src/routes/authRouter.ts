@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
-import passport from "passport";
 import userController from "../controllers/authController";
+import authController from "../controllers/authController";
 import { validationMiddleware } from "../middleware/validationMiddleware";
 import {
   LoginValidationSchema,
@@ -24,19 +24,8 @@ authRouter.post(
   validationMiddleware,
   userController.login
 );
+authRouter.post("/google", authController.googleSignInClient);
 authRouter.post("/sign-out", userController.logout);
 authRouter.get("/refresh", userController.refresh);
-
-authRouter.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-authRouter.get(
-  "/googleRedirect",
-  passport.authenticate("google"),
-  // @ts-ignore
-  userController.googleAuthRedirect
-);
 
 export default authRouter;
