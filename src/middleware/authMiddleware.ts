@@ -21,7 +21,7 @@ export default function authMiddleware(
   }
   try {
     const accessToken = req.headers.authorization?.split(" ")[1];
-    console.log(accessToken);
+
     if (accessToken && accessToken !== "null") {
       const userData = tokenService.validateAccessToken(accessToken);
 
