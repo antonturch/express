@@ -19,26 +19,27 @@ const getOrdersByUserId = async (
 
   try {
     const orders: IOrder[] = await orderService.getOrdersByUserId(userId);
-    const products: IProduct[] = await productService.getProducts();
+    const products = await productService.getProductsForOrderList(orders);
     let userOrders: IFullOrder[] = [];
 
     orders.map((ord) => {
-      for (let i = 0; i < products.length; i++) {
-        if (products[i].id === ord.ProductId) {
-          userOrders = [
-            ...userOrders,
-            {
-              orderId: ord.id,
-              productId: products[i].id,
-              productName: products[i].name,
-              productImg: products[i].img,
-              price: products[i].price,
-              currency: products[i].currency,
-            },
-          ];
-        }
+      const product = products.find(({ id }) => id === ord.ProductId);
+      if (!product) {
+        return;
       }
+      userOrders = [
+        ...userOrders,
+        {
+          orderId: ord.id,
+          productId: product.id,
+          productName: product.name,
+          productImg: product.img,
+          price: product.price,
+          currency: product.currency,
+        },
+      ];
     });
+
     res.json(userOrders);
   } catch (e) {
     next(e);
